@@ -1,6 +1,7 @@
 import os
 from openai import OpenAI
 import sys
+import typing
 
 # get openai api key
 my_api_key = os.getenv('OPENAI_API_KEY')
@@ -17,8 +18,12 @@ message_history = [
     ]
 follow_up_prompt = "ask 5 follow-up questions to the system's responses."
 
+# ------------------------------------------------------------------ #
 
-def parse_args() -> (str, str):
+def parse_args() -> typing.Tuple[str, str]:
+    """
+    parses command line arguments. returns model and mode. 
+    """
     help_message = """ 
         usage: python main.py <-flag>
 
@@ -63,14 +68,14 @@ def parse_args() -> (str, str):
     return model, mode
 
 
-def read_text_file(path):
+def read_text_file(path: str) -> str:
     with open(path) as f:
         text = f.read()
     
     return text
 
 
-def get_response( gpt_model) -> (str, int): 
+def get_response( gpt_model: str) -> typing.Tuple[str, int]: 
     """
     generates an openai-api request and processes it. 
     returns the request result and token usage
@@ -92,22 +97,24 @@ def get_response( gpt_model) -> (str, int):
     return result, token_usage
 
 
-def generate_follow_up(gpt_model):
+def generate_follow_up(gpt_model) -> str:
+    """
+    generates follow-up questions and appends them  to message history
+    """
     prompt: str = follow_up_prompt
     add_to_history("system", prompt)
 
-    response = get_response(gpt_model)
+    response: str = get_response(gpt_model)
 
     return response
 
 
-def add_to_history(role: str, input_text: str):
+def add_to_history(role: str, input_text: str) -> None:
     """
     adds the text to the message history
     
     @param role - can be `user` or `role`
     """
-
     if role != "user" and role != "system":
         raise Exception ("wrong user for history appending!")
         sys.exit()
@@ -116,7 +123,12 @@ def add_to_history(role: str, input_text: str):
     message_history.append(message)
 
 
-def print_info(model, tokens):
+def print_info(model, tokens) -> None:
+    """
+    prints information about the prompt(s). 
+    information message includes the model used, 
+    total amount of tokens and amount of prompt in cents.
+    """
     fees: float  = calculate_price(model, tokens)
     total_tokens = tokens[0] + tokens[1]
     message = f"""
@@ -130,7 +142,7 @@ def print_info(model, tokens):
     print(message)
 
 
-def calculate_price(model: str, token_usage : (int, int)) -> float:
+def calculate_price(model: str, token_usage : typing.Tuple[int, int]) -> float:
     """
     calculates the total price of prompt collection in cents.
 
@@ -162,14 +174,16 @@ def calculate_price(model: str, token_usage : (int, int)) -> float:
 
 
 def main():                
-    model, mode = parse_args()
-    text        = read_text_file(PATH)
-    add_to_history('user', text)
-    response    = get_response(model)        # response[0] is text, 
-                                             # response[1] is token_usage
+    model, mode    = parse_args()           # fetch model (gpt3.5-turbo, gpt4, ...) 
+                                            # and mode (esp. follow-up mode)
+    prompting_text = read_text_file(PATH)      
+    add_to_history('user', prompting_text)
+
+    response       = get_response(model)    # response[0] is text, 
+                                            # response[1] is token_usage
     add_to_history("system", response[0])
     print("\n", response[0], "\n\n-\n")
-    tokens      = response[1]
+    tokens         = response[1]
 
     if mode == "follow-up":
         # get follow-up questions
@@ -182,13 +196,13 @@ def main():
         # process follow-up questions
         response = get_response(model)
         answer   = response[0]
-        tokens  += response[1]               # adjust token count
+        tokens  += response[1]              # adjust token count
 
         add_to_history("system", response[0])
         
         print( follow_up_questions, "\n-\n\n", answer)
 
-    print_info(model, tokens)       # add information about token usage
+    print_info(model, tokens)               # add information about token usage
 
 
 if __name__ == '__main__':
