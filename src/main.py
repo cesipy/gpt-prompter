@@ -35,7 +35,7 @@ def parse_args() -> typing.Tuple[str, str]:
         --follow-up for follow up questions
         """
     
-    model = "gpt-3.5-turbo"  # Default model
+    model = "gpt-3.5-turbo-1106"  # Default model
     mode = "default"
 
     if len(sys.argv) > 1: 
@@ -153,14 +153,17 @@ def calculate_price(model: str, token_usage : typing.Tuple[int, int]) -> float:
     input_token_1k  = token_usage[0] / 1000.0
     output_token_1k = token_usage[1] / 1000.0
     match model: 
+        case "gpt-3.5-turbo-1106": 
+            input_price = input_token_1k  * 0.1
+            output_pice = output_token_1k * 0.2
 
         case "gpt-3.5-turbo": 
             input_price = input_token_1k  * 0.15                 # in cent
             output_pice = output_token_1k * 0.2                  
 
         case "gpt-4":
-            input_price = input_token_1k  * 0.15                 # in cent
-            output_pice = output_token_1k * 0.2                  
+            input_price = input_token_1k  * 3                 # in cent
+            output_pice = output_token_1k * 6                  
 
         case "gpt-3.5-turbo-16k":
             input_price = input_token_1k  * 0.3                 # in cent
