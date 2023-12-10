@@ -61,3 +61,8 @@ def test_parse_args_gpt4_followup(monkeypatch):
     # Test with --gpt4-32k argument
     monkeypatch.setattr('sys.argv', ['', '--gpt4', '--follow-up'])
     assert main.parse_args() == ("gpt-4", "follow-up")
+
+def test_parse_args_token_count(monkeypatch):
+    # Test with --token-count argument
+    monkeypatch.setattr('sys.argv', ['', '--token-count'])
+    assert main.parse_args() == ("gpt-3.5-turbo-1106", "token-count")

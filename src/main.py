@@ -2,6 +2,7 @@ import os
 from openai import OpenAI
 import sys
 import typing
+import token_helper
 
 # get openai api key
 my_api_key = os.getenv('OPENAI_API_KEY')
@@ -54,6 +55,9 @@ def parse_args() -> typing.Tuple[str, str]:
         elif sys.argv[1] == "--follow-up":
             mode = "follow-up"
 
+        elif sys.argv[1] == "--token-count":
+            mode = "token-count"
+        
         elif sys.argv[1] in ["--help", "--usage"]:
             print(help_message)
             sys.exit(0)
@@ -181,6 +185,11 @@ def main():
                                             # and mode (esp. follow-up mode)
     prompting_text = read_text_file(PATH)      
     add_to_history('user', prompting_text)
+
+    if mode == "token-count":
+        num_token = token_helper.token_counter(prompting_text, model)
+        print(f"token count: {num_token}")
+        return
 
     response       = get_response(model)    # response[0] is text, 
                                             # response[1] is token_usage
