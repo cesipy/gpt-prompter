@@ -32,7 +32,7 @@ def parse_args() -> typing.Tuple[str, str]:
         --gpt4 for gpt4
         --gpt3-16k for gpt3.5-turbo-16k
         --gpt4-32k for gpt4-32k
-        --follow-up for follow up questions
+        --follow-up for follow up questions (main.py <optional: gpt-model> --follow-up)
         """
     
     model = "gpt-3.5-turbo-1106"  # Default model
@@ -43,7 +43,7 @@ def parse_args() -> typing.Tuple[str, str]:
             model = "gpt-3.5-turbo-16k"
 
         elif sys.argv[1] == "--gpt3":
-            model = "gpt-3.5-turbo"
+            model = "gpt-3.5-turbo-1106"
 
         elif sys.argv[1] == "--gpt4":
             model = "gpt-4"
