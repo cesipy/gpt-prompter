@@ -15,7 +15,7 @@ client = OpenAI(
 PATH = '../res/text.txt'              # modify here if needed
 
 message_history = [
-    {"role": "system", "content": "act like donald trump."}
+    {"role": "system", "content": "you are a helpful assistant."}
     ]
 follow_up_prompt = "ask 5 follow-up questions to the system's responses."
 
@@ -34,6 +34,7 @@ def parse_args() -> typing.Tuple[str, str]:
         --gpt3-16k for gpt3.5-turbo-16k
         --gpt4-32k for gpt4-32k
         --follow-up for follow up questions (main.py <optional: gpt-model> --follow-up)
+        --token-count for counting tokens
         """
     
     model = "gpt-3.5-turbo-1106"  # Default model
